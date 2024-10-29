@@ -8,6 +8,7 @@ const userModel = new Schema(
         email:{type:String, required: true, unique: true},
         phone:{type:String},
         isVerified: { type: Boolean, default: false },
+        balance: { type: Number, default: 0 },
     });
 
 

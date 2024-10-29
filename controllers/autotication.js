@@ -1,9 +1,8 @@
-
 const User = require("../models/user");
 const jwt = require('jsonwebtoken');
 const { sendVerificationEmail } = require('../utils/emailService');
 
-const JWT_SECRET = "my-secret-code"; // should be in env 
+const JWT_SECRET = process.env.JWT_SECRET; // should be in env 
 
 // async allows to use await
 async function signup(req, res) {
@@ -77,5 +76,5 @@ async function verify(req, res)
     res.status(303).redirect('http://10.10.1.166:5500/projects/bank/front/index.html');
 }
 
-module.exports = {signup, signin, verify, JWT_SECRET} //this export the signup fucntion for the whole project
+module.exports = {signup, signin, verify} //this export the signup fucntion for the whole project
 

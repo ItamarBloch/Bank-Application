@@ -1,12 +1,12 @@
 const Transaction = require("../models/transaction.js");
 const User = require("../models/user");
-const {JWT_SECRET} = require("./user.js"); // should be from env 
 const jwt = require('jsonwebtoken');
 
+const JWT_SECRET = process.env.JWT_SECRET;
 
 async function makeTransactions(req, res) {
     const { email, amount } = req.body; // Expect email and amount in the request body
-    //console.log("Request Headers:", req.headers);
+    
     const token = req.headers.authorization?.split(" ")[1]; // Extract the token from the Authorization header
 
     if (amount <= 0) {
@@ -34,7 +34,6 @@ async function makeTransactions(req, res) {
     if (!receiver) {
         return res.status(404).send({ message: "Receiver not found" }); 
     }
-
 
     // Create the transaction
     const transaction = new Transaction({
