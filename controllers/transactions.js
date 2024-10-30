@@ -5,17 +5,9 @@ const jwt = require('jsonwebtoken');
 const JWT_SECRET = process.env.JWT_SECRET;
 
 async function makeTransactions(req, res) {
-    const { email, amount } = req.body; // Expect email and amount in the request body
+    const { email, amount } = req.body; 
     
-    const token = req.headers.authorization?.split(" ")[1]; // Extract the token from the Authorization header
-
-    if (amount <= 0) {
-        return res.status(401).send({ message: "Invalid amount" });
-    }
-
-    if (!token) {
-        return res.status(401).send({ message: "Unauthorized: No token provided" });
-    } 
+    const token = req.headers.authorization?.split(" ")[1];
 
     let currentUser;
     try {
@@ -55,10 +47,6 @@ async function makeTransactions(req, res) {
 async function getTransactions(req, res)
 {
     const token = req.headers.authorization?.split(" ")[1]; // Extract the token from the Authorization header
-
-    if (!token) {
-        return res.status(401).send({ message: "Unauthorized: No token provided" });
-    }
 
     let currentUser;
     try {

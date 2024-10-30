@@ -3,9 +3,9 @@ const express = require("express"); // catch the default export (like library)
 const mongoose = require("mongoose"); // catch the default export
 const cors = require("cors"); // catch the default export
 require('dotenv').config();
-const {signup, signin, verify} = require("./controllers/autotication.js"); // catch the specific {$fucntion_name} from export
+const {signup, signin, verify} = require("./controllers/authentication.js"); // catch the specific {$fucntion_name} from export
 const {getTransactions, makeTransactions} = require("./controllers/transactions.js");
-
+const authorizeToken = require("./middleware/authorizeToken");
 
 const app = express(); // create an instance of server
  
@@ -24,18 +24,18 @@ app.use(cors()); // allows front to access the server (backend) (postman have ac
 
 app.get("/", (req, res) => {
     res.send("Started Working, Express!");
-    }); // ‘/’ represents the root or main endpoint of our server. (app.get (GET))
+    }); 
 
-app.post("/signup", signup); //it is a callback that automaticliy recieves rec/res
-app.post("/signin", signin); //it is a callback that automaticliy recieves rec/res
+app.post("/signup", signup); 
+app.post("/signin", signin); 
 app.get("/verify-email", verify);
 
-app.post("/transactions", makeTransactions);
-app.get("/transactions", getTransactions); //it is a callback that automaticliy recieves rec/res
+app.post("/transactions", authorizeToken, makeTransactions);
+app.get("/transactions", authorizeToken, getTransactions);
 
 const port = process.env.PORT;
 
 app.listen(port, () => {
     console.log(`Server listening at port: ${port}`);
-    });//listen to port (the server is UP with port ($port))  // () =>     LAMBDA
+    });
 
