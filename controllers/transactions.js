@@ -1,6 +1,7 @@
 const Transaction = require("../models/transaction.js");
 const User = require("../models/user");
 const jwt = require('jsonwebtoken');
+const {updateBalance} = require("../utils/balance.js");
 
 const JWT_SECRET = process.env.JWT_SECRET;
 
@@ -9,18 +10,20 @@ async function makeTransactions(req, res) {
     
     const token = req.headers.authorization?.split(" ")[1];
 
-    let currentUser;
-    try {
-        currentUser = jwt.verify(token, JWT_SECRET); // Decode the token using your secret
-    } catch (err) {
-        console.log("Make Transaction: verify token error", err);
-        return res.status(401).send({ message: "Unauthorized: Invalid token" });
+    let currentUser = jwt.verify(token, JWT_SECRET);
+    let sender = await User.findOne({ email: currentUser.email });
+    
+    if (sender.balance < amount || amount < 0)
+    {
+        return res.status(404).send({ message: "invalid amount" });
     }
 
-    // ++ add to check if user has enough money
-    // ++ if he doesnt send to it self
+    if (sender.email == email)
+    {
+        return res.status(404).send({ message: "invalid reciver" });
+    }
 
-    // Find the receiver user by email
+    
     const receiver = await User.findOne({ email });
 
     if (!receiver) {
@@ -34,26 +37,23 @@ async function makeTransactions(req, res) {
         amount: amount,
     });
 
+    updateBalance(sender, receiver, amount);
+
     try {
         await transaction.save();
         res.status(201).send({ message: "Transaction successful", transaction });
     } catch (error) {
         console.error('Error saving transaction:', error);
+        updateBalance(receiver, sender, amount); //undo the balance change
         res.status(500).send({ message: "Server error while saving transaction" });
     }
-    
 }
 
 async function getTransactions(req, res)
 {
     const token = req.headers.authorization?.split(" ")[1]; // Extract the token from the Authorization header
 
-    let currentUser;
-    try {
-        currentUser = jwt.verify(token, JWT_SECRET); // Decode the token using your secret
-    } catch (err) {
-        return res.status(401).send({ message: "Unauthorized: Invalid token" });
-    }
+    let currentUser = jwt.verify(token, JWT_SECRET);
 
     // Fetch transactions where the current user is either the sender or receiver
     try {

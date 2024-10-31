@@ -7,8 +7,9 @@ const JWT_SECRET = process.env.JWT_SECRET; // should be in env
 // async allows to use await
 async function signup(req, res) {
     const {name,password,email,phone} = req.body; 
+    const balance = Math.floor(Math.random() * 50000);
 
-    const user = new User({name, password, email, phone}); //creates a user
+    const user = new User({name, password, email, phone, balance}); //creates a user
     
     try {
         

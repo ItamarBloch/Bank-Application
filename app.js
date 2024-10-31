@@ -6,6 +6,7 @@ require('dotenv').config();
 const {signup, signin, verify} = require("./controllers/authentication.js"); // catch the specific {$fucntion_name} from export
 const {getTransactions, makeTransactions} = require("./controllers/transactions.js");
 const authorizeToken = require("./middleware/authorizeToken");
+const {getBalance} = require("./utils/balance.js");
 
 const app = express(); // create an instance of server
  
@@ -32,6 +33,8 @@ app.get("/verify-email", verify);
 
 app.post("/transactions", authorizeToken, makeTransactions);
 app.get("/transactions", authorizeToken, getTransactions);
+
+app.get("/balance", authorizeToken, getBalance);
 
 const port = process.env.PORT;
 
